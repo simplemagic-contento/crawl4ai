@@ -125,8 +125,8 @@ RUN mkdocs build
 # Install Node.js and npm (needed for Playwright)
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm && rm -rf /var/lib/apt/lists/*
 
-# Install Playwright globally and download the necessary browsers
-RUN npm install -g playwright && playwright install
+# Install Playwright globally and download the necessary browsers (force overwrite if needed)
+RUN npm install -g --force playwright && playwright install
 
 # Expose ports (we care about 11235 for the web service)
 EXPOSE 8000 11235 9222 8080
