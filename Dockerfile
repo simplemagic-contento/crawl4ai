@@ -139,7 +139,7 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "11235"]
 FROM unclecode/crawl4ai:all
 
 # Install the necessary Playwright browsers
-RUN npx playwright install
+RUN ["npx", "playwright", "install"]
 
 # Expose the same port Crawl4AI uses (11235)
 EXPOSE 11235
