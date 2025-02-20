@@ -112,7 +112,7 @@ RUN if [ "$INSTALL_TYPE" = "all" ] ; then \
         pip install "." ; \
     fi
 
-    # Install MkDocs and required plugins
+# Install MkDocs and required plugins
 RUN pip install --no-cache-dir \
     mkdocs \
     mkdocs-material \
@@ -122,27 +122,14 @@ RUN pip install --no-cache-dir \
 # Build MkDocs documentation
 RUN mkdocs build
 
-# Install Playwright and browsers
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-    playwright install chromium; \
-    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-    playwright install chromium; \
-    fi
+# Install Node.js and npm (needed for Playwright)
+RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm && rm -rf /var/lib/apt/lists/*
 
-# Expose port
+# Install Playwright globally and download the necessary browsers
+RUN npm install -g playwright && playwright install
+
+# Expose ports (we care about 11235 for the web service)
 EXPOSE 8000 11235 9222 8080
 
-# Start the FastAPI server
+# Start the FastAPI server using Uvicorn (the expected startup command)
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "11235"]
-
-# Start with the Crawl4AI base image (the "all" version has full features)
-FROM unclecode/crawl4ai:all
-
-# Install the necessary Playwright browsers
-RUN ["npx", "playwright", "install"]
-
-# Expose the same port Crawl4AI uses (11235)
-EXPOSE 11235
-
-# Start Crawl4AI (this might be the same as the base image, but let's be explicit)
-CMD ["node", "server.js"]
