@@ -134,3 +134,15 @@ EXPOSE 8000 11235 9222 8080
 
 # Start the FastAPI server
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "11235"]
+
+# Start with the Crawl4AI base image (the "all" version has full features)
+FROM unclecode/crawl4ai:all
+
+# Install the necessary Playwright browsers
+RUN npx playwright install
+
+# Expose the same port Crawl4AI uses (11235)
+EXPOSE 11235
+
+# Start Crawl4AI (this might be the same as the base image, but let's be explicit)
+CMD ["node", "server.js"]
